@@ -9,7 +9,7 @@ using namespace eir;
 namespace {
     void notice_to(Bot *b, std::string dest, std::string text)
     {
-        b->send("NOTICE " + dest + " :" + text);
+        b->send("PRIVMSG " + dest + " :" + text);
     }
 }
 

@@ -14,12 +14,15 @@ struct Whoami : CommandHandlerBase<Whoami>, Module
             return;
         }
 
-        m->source.reply("You are " + m->source.client->nick());
+        std::string whobuf;
+        whobuf.append("You are " + m->source.client->nick());
 
         if (m->source.client->account().empty())
-            m->source.reply("You are not logged in");
+            whobuf.append(" and you are not logged in");
         else
-            m->source.reply("You are logged in as " + m->source.client->account());
+            whobuf.append(" and you are logged in as " + m->source.client->account());
+
+        m->source.reply(whobuf);
 
         std::string privbuf;
         std::map<std::string, std::string> chanprivbuf;

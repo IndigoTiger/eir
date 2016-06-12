@@ -270,7 +270,7 @@ void Implementation<Bot>::rehash(const Message *m)
 
 static void notice_to(Bot *b, std::string dest, std::string text)
 {
-    b->send("NOTICE " + dest + " :" + text);
+    b->send("PRIVMSG " + dest + " :" + text);
 }
 
 void Implementation<Bot>::handle_message(std::string line)

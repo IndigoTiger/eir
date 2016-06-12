@@ -391,7 +391,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
                     adminchan = bot->get_setting("voicebot_admin_channel");
 
                 if (bot && !adminchan.empty())
-                    bot->send("NOTICE " + adminchan + " :Removing expired entry " +
+                    bot->send("PRIVMSG " + adminchan + " :Removing expired entry " +
                             (*it)["mask"] + " added by " + (*it)["setter"] + " on " +
                             format_time(bot, (*it)["set"].Int()));
 
