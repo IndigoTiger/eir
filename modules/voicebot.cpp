@@ -497,7 +497,29 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         }
     }
 
+    void do_add_internal(Bot *b, const std::string mask, const std::string duration, const std::string reason)
+    {
+        time_t expires = parse_time(duration);
 
+        if (expires != 0)
+            expires += time(NULL);
+
+        dnv.push_back(opentry(b->name(), mask, b->nick(), reason, time(NULL), expires));
+    }
+
+    void do_remove_internal(Bot *b, const std::string mask)
+    {
+        for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); it++)
+        {
+            if (mask_check(mask, (*it)["mask"]))
+            {
+                old.push_back(*it);
+                (*it)["removed"] = 1;
+            }
+        }
+
+        do_removals(dnv);
+    }
 
     void irc_join(const Message *m)
     {
@@ -553,6 +575,25 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
             }
         }
         do_removals(lostvoices);
+    }
+
+    void irc_mode(const Message *m)
+    {
+        std::string channelname = m->bot->get_setting("voicebot_channel");
+
+        if (!m->source.client)
+            return
+
+        if (m->source.destination != channelname)
+            return
+
+        Channel::ptr channel = m->bot->find_channel(channelname);
+
+        if (m->args[0] == "add" && m->args[1] == "q")
+            do_add_internal(m->bot, m->args[2], 0, "quieted");
+
+        else if (m->args[0] == "remove" && m->args[1] == "q")
+            do_remove_internal(m->bot, m->args[2]);
     }
 
     void irc_depart (const Message *m)
@@ -640,7 +681,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         }
     }
 
-    CommandHolder add, remove, list, info, check, voice, clear, change, match_client, shutdown, join, part, quit, nick;
+    CommandHolder add, remove, list, info, check, voice, clear, change, match_client, shutdown, join, part, quit, nick, mode;
     EventHolder check_event;
     HelpTopicHolder voicebothelp, voicehelp, checkhelp, matchhelp, addhelp, removehelp, edithelp;
     HelpIndexHolder index;
@@ -676,6 +717,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         part = add_handler(filter_command_type("PART", sourceinfo::RawIrc),&voicebot::irc_depart, true, Message::first);
         join = add_handler(filter_command_type("JOIN", sourceinfo::RawIrc),&voicebot::irc_join,true);
         nick = add_handler(filter_command_type("NICK", sourceinfo::RawIrc),&voicebot::irc_nick,true);
+        mode = add_handler(filter_command_type("mode_change", sourceinfo::Internal), &voicebot::irc_mode, true, Message::first);
 
         check_event = add_recurring_event(60, &voicebot::check_expiry);
 
