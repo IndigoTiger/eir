@@ -114,6 +114,21 @@ namespace
         std::remove_copy_if(list.begin(), list.end(), std::back_inserter(newlist.Array()), Removed());
         std::swap(list, newlist);
     }
+
+    int mask_check(std::string mask, std::string name)
+    {
+        std::string webchat = "gateway/web/freenode/ip.";
+        std::string::size_type i = name.find(webchat)
+
+        int matched = mask_match(mask, name);
+
+        if (!matched && i != std::string::npos)
+        {
+            name.erase(i, webchat.length());
+            matched = mask_match(mask, name);
+        }
+        return matched
+    }
 }
 
 struct voicebot : CommandHandlerBase<voicebot>, Module
@@ -156,7 +171,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
 
         for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); ++it)
         {
-            if (mask_match((*it)["mask"], mask))
+            if (mask_check((*it)["mask"], mask))
             {
                 m->source.reply("Mask already matched by " + (*it)["mask"]);
                 return;
@@ -198,7 +213,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
 
         for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); ++it)
         {
-            if (mask_match(mask, (*it)["mask"]))
+            if (mask_check(mask, (*it)["mask"]))
             {
                 if (expires)
                     (*it)["expires"] = expires;
@@ -229,7 +244,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
 
         for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); ++it)
         {
-            if (mask_match(mask, (*it)["mask"]))
+            if (mask_check(mask, (*it)["mask"]))
             {
                 Bot *bot = BotManager::get_instance()->find((*it)["bot"]);
                 m->source.reply("Removing " + (*it)["mask"] + " (" + (*it)["reason"] + ") " +
@@ -366,7 +381,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         }
 
         for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); ++it)
-            if (mask_match((*it)["mask"], mask))
+            if (mask_check((*it)["mask"], mask))
             {
                 Bot *bot = BotManager::get_instance()->find((*it)["bot"]);
                 m->source.reply((*it)["mask"] + " (" + (*it)["reason"] + ") (added by " +
@@ -498,7 +513,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
 
         for (ValueArray::iterator it = lostvoices.begin(); it != lostvoices.end(); ++it)
         {
-            if (mask_match((*it)["mask"], m->source.raw))
+            if (mask_check((*it)["mask"], m->source.raw))
             {
                 Client::ptr c = m->bot->find_client(m->source.name);
                 if (c)
@@ -528,7 +543,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
 
         for (ValueArray::iterator it = lostvoices.begin(); it != lostvoices.end(); ++it)
         {
-            if (mask_match((*it)["mask"], m->source.client->nuh()))
+            if (mask_check((*it)["mask"], m->source.client->nuh()))
             {
                 std::weak_ptr<Client> w(m->source.client);
                 Logger::get_instance()->Log(m->bot, NULL, Logger::Debug, "*** Matched lost voice for " + m->source.raw + "(" + (*it)["mask"] + ")");
