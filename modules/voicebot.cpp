@@ -590,7 +590,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         Channel::ptr channel = m->bot->find_channel(channelname);
 
         if (m->args[0] == "add" && m->args[1] == "q")
-            do_add_internal(m->bot, m->args[2], 0, "quieted");
+            do_add_internal(m->bot, m->args[2], "0", "quieted");
 
         else if (m->args[0] == "remove" && m->args[1] == "q")
             do_remove_internal(m->bot, m->args[2]);
