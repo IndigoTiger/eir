@@ -504,7 +504,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         if (expires != 0)
             expires += time(NULL);
 
-        dnv.push_back(opentry(b->name(), mask, b->nick(), reason, time(NULL), expires));
+        dnv.push_back(voiceentry(b->name(), mask, b->nick(), reason, time(NULL), expires));
     }
 
     void do_remove_internal(Bot *b, const std::string mask)
@@ -582,10 +582,10 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         std::string channelname = m->bot->get_setting("voicebot_channel");
 
         if (!m->source.client)
-            return
+            return;
 
         if (m->source.destination != channelname)
-            return
+            return;
 
         Channel::ptr channel = m->bot->find_channel(channelname);
 
