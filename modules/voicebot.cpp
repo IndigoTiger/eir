@@ -118,7 +118,7 @@ namespace
     int mask_check(std::string mask, std::string name)
     {
         std::string webchat = "gateway/web/freenode/ip.";
-        std::string::size_type i = name.find(webchat)
+        std::string::size_type i = name.find(webchat);
 
         int matched = mask_match(mask, name);
 
@@ -127,7 +127,7 @@ namespace
             name.erase(i, webchat.length());
             matched = mask_match(mask, name);
         }
-        return matched
+        return matched;
     }
 }
 
