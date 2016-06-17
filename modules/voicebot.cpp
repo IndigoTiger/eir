@@ -285,7 +285,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
             bool matched = false;
             for (ValueArray::iterator i2 = dnv.begin(); i2 != dnv.end(); ++i2)
             {
-                if (match((*i2)["mask"], (*it)->client->nuh()))
+                if (mask_check((*i2)["mask"], (*it)->client->nuh()))
                 {
                     matched = true;
                     break;
