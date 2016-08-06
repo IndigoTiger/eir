@@ -533,12 +533,15 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         if (m->source.destination != channelname)
             return;
 
-        if (m->source.client->privs().has_privilege("autovoice"))
+        Client::ptr c = m->bot->find_client(m->source.name);
+        if (c)
         {
-            Client::ptr c = m->bot->find_client(m->source.name);
-            std::weak_ptr<Client> w(c);
-            add_event(time(NULL)+5, std::bind(revoice, m->bot, w, channelname));
-            return;
+            if (c->privs()->has_privilege("autovoice"))
+            {
+                std::weak_ptr<Client> w(c);
+                add_event(time(NULL)+5, std::bind(revoice, m->bot, w, channelname));
+                return;
+            }
         }
 
         for (ValueArray::iterator it = lostvoices.begin(); it != lostvoices.end(); ++it)
