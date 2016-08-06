@@ -708,12 +708,6 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
             return;
         }
 
-        for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); ++it)
-        {
-            if (match((*it)["mask"], c->nuh()))
-                return;
-        }
-
         if (mem->has_mode('v'))
         {
             Logger::get_instance()->Log(bot, NULL, Logger::Debug, "**** " + c->nick() + " is alreadly voiced on " + channel +", skipping");
