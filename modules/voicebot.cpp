@@ -536,7 +536,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         Client::ptr c = m->bot->find_client(m->source.name);
         if (c)
         {
-            if (c->privs()->has_privilege("autovoice"))
+            if (c->privs().has_privilege("autovoice"))
             {
                 std::weak_ptr<Client> w(c);
                 add_event(time(NULL)+5, std::bind(revoice, m->bot, w, channelname));
