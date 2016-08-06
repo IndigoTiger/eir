@@ -533,6 +533,14 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         if (m->source.destination != channelname)
             return;
 
+        if (m->source.client->privs().has_privilege("autovoice"))
+        {
+            Client::ptr c = m->bot->find_client(m->source.name);
+            std::weak_ptr<Client> w(c);
+            add_event(time(NULL)+5, std::bind(revoice, m->bot, w, channelname));
+            return;
+        }
+
         for (ValueArray::iterator it = lostvoices.begin(); it != lostvoices.end(); ++it)
         {
             if (mask_check((*it)["mask"], m->source.raw))
@@ -551,6 +559,27 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         do_removals(lostvoices);
     }
 
+    void irc_account(const Message *m)
+    {
+        std::string revoicing = m->bot->get_setting_with_default("voicebot_enable_revoicing", "");
+        std::string channelname = m->bot->get_setting("voicebot_channel");
+
+        if (revoicing.empty())
+            return;
+        if (!m->source.client)
+            return;
+        if (m->source.name == m->bot->nick())
+            return;
+
+        if (m->source.client->privs().has_privilege("autovoice"))
+        {
+            Client::ptr c = m->bot->find_client(m->source.name);
+            std::weak_ptr<Client> w(c);
+            add_event(time(NULL)+5, std::bind(revoice, m->bot, w, channelname));
+            return;
+        }
+    }
+
     void irc_nick(const Message *m)
     {
         std::string revoicing = m->bot->get_setting_with_default("voicebot_enable_revoicing", "");
@@ -562,6 +591,14 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
             return;
         if (m->source.name == m->bot->nick())
             return;
+
+        if (m->source.client->privs().has_privilege("autovoice"))
+        {
+            Client::ptr c = m->bot->find_client(m->source.name);
+            std::weak_ptr<Client> w(c);
+            add_event(time(NULL)+5, std::bind(revoice, m->bot, w, channelname));
+            return;
+        }
 
         for (ValueArray::iterator it = lostvoices.begin(); it != lostvoices.end(); ++it)
         {
@@ -716,6 +753,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         quit = add_handler(filter_command_type("QUIT", sourceinfo::RawIrc),&voicebot::irc_depart, true, Message::first);
         part = add_handler(filter_command_type("PART", sourceinfo::RawIrc),&voicebot::irc_depart, true, Message::first);
         join = add_handler(filter_command_type("JOIN", sourceinfo::RawIrc),&voicebot::irc_join,true);
+        acct = add_handler(filter_command_type("ACCOUNT", sourceinfo::RawIrc),&voicebot::irc_account,true);
         nick = add_handler(filter_command_type("NICK", sourceinfo::RawIrc),&voicebot::irc_nick,true);
         mode = add_handler(filter_command_type("mode_change", sourceinfo::Internal), &voicebot::irc_mode, true, Message::first);
 
