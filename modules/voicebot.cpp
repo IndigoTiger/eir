@@ -708,7 +708,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
             return;
         }
 
-        for (ValueArray::iterator it = dnv.begin(); it != dnv.end; ++it)
+        for (ValueArray::iterator it = dnv.begin(); it != dnv.end(); ++it)
         {
             if (match((*it)["mask"], c->nuh()))
                 return;
@@ -724,7 +724,7 @@ struct voicebot : CommandHandlerBase<voicebot>, Module
         }
     }
 
-    CommandHolder add, remove, list, info, check, voice, clear, change, match_client, shutdown, join, part, quit, nick, mode;
+    CommandHolder add, remove, list, info, check, voice, clear, change, match_client, shutdown, join, part, quit, nick, mode, acct;
     EventHolder check_event;
     HelpTopicHolder voicebothelp, voicehelp, checkhelp, matchhelp, addhelp, removehelp, edithelp;
     HelpIndexHolder index;
